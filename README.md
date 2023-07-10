@@ -1,4 +1,4 @@
-# ProjectDesignerPDF
+# Document Template designer
 
 This project was created to generate documents in .pdf and .docx format. As a basis, you provide a .docx document, on the basis of which the output file is formed, the words {key} can also be replaced with text or an image, and it is also possible to remove empty lines in tables.
 
