@@ -1,5 +1,5 @@
 from docx import Document
-from docx2pdf import convert_to
+from docx2pdf import*
 from tkinter import messagebox
 
 import re
@@ -171,8 +171,8 @@ if __name__ == '__main__':
     # print("args.replacements: " + args.replacements)
     try:
         main(args.input_file, args.output_file, args.clear_table, args.save_docx, args.save_pdf, string_to_dict(args.replacements))
-    except pythoncom.com_error:
-        print(" LibreOffice or Microsoft Office object not found! Requires installation to save a .pdf file.")
+    except LibreOfficeError:
+        print("LibreOffice not found or returned an error! Requires installation to save the .pdf file.")
 
 
 # ______________________________________

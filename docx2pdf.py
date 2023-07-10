@@ -5,32 +5,37 @@ import os
 import sys
 
 
+class LibreOfficeError(Exception):
+    def __init__(self, output):
+        self.output = output
+
+# def convert_to(file_docx, out_dir, timeout=None):
+#     file_docx = file_docx.replace("\\\\", "\\")
+#     out_dir   = out_dir.replace("\\\\", "\\")
+
+#     # libreoffice_path = read_path_libreoffice()+'soffice.exe'
+#     # args = ['--headless', '--convert-to pdf', file_docx, '--outdir', out_dir]
+
+#     argsStr = "start /min /D \"" + read_path_libreoffice() + '\" soffice --headless --convert-to pdf ' + file_docx + ' --outdir ' + out_dir
+#     subprocess.run(argsStr, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=timeout)
+
+#     if os.path.exists(os.path.splitext(file_docx)[0] + '.pdf'):
+#         raise LibreOfficeError('')
+
+
 def convert_to(file_docx, out_dir, timeout=None):
     file_docx = file_docx.replace("\\\\", "\\")
     out_dir   = out_dir.replace("\\\\", "\\")
 
+    libreoffice_path = read_path_libreoffice()+'soffice.exe'
+    args = ['--headless', '--convert-to', 'pdf', file_docx, '--outdir', out_dir]
+    process = subprocess.run([libreoffice_path] + args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=timeout)
+    filename = re.search('-> (.*?) using filter', process.stdout.decode())
 
-    # args = ["start /D \"" + read_path_libreoffice() + "\" soffice", '--headless', '--convert-to', 'pdf', file_docx, '--outdir', out_dir]
-    argsStr = "start /D \"" + read_path_libreoffice() + '\" soffice --headless --convert-to pdf ' + file_docx + ' --outdir ' + out_dir
-    # print("args:  " + str(args))
-    # process = subprocess.run(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=timeout)
-    print("argsStr:  " + argsStr)
-    process = subprocess.run(argsStr, shell=True)
-    # print(".stdout.decode():  " + str(process.stdout.decode()))
-    # filename = re.search('-> (.*?) using filter', process.stdout.decode())
-    # print("filename: " + str(filename))
-
-    # if filename is None:
-    #     raise LibreOfficeError(process.stdout.decode())
-    # else:
-    #     return filename.group(1)
-
-
-# def libreoffice_exec():
-#     # TODO: Provide support for more platforms
-#     if sys.platform == 'darwin':
-#         return '/Applications/LibreOffice.app/Contents/MacOS/soffice'
-#     return 'libreoffice'
+    if filename is None:
+        raise LibreOfficeError(process.stdout.decode())
+    else:
+        return filename.group(1)
 
 
 def read_path_libreoffice():
@@ -48,17 +53,6 @@ def read_path_libreoffice():
 
     # Открываем файл на чтение
     with open(file_path, 'r') as file:
-        # Читаем строку из файла
         line = file.readline()
     
-    # Возвращаем прочитанную строку
     return line
-
-
-# class LibreOfficeError(Exception):
-#     def __init__(self, output):
-#         self.output = output
-
-
-# if __name__ == '__main__':
-#     print('Converted to ' + convert_to(sys.argv[1], sys.argv[2]))
