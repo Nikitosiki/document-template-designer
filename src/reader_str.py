@@ -1,4 +1,4 @@
-from src.entity.usestring import UseString
+from entity.usestring import UseString
 
 
 # Парсим строку в dictionary

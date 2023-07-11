@@ -1,0 +1,16 @@
+<replacements>
+    <item key="protocol_number" text="234-123-1"/>
+    <item key="outside_temp" text="23°C"/>
+    <item key="calibration_date" text="01.07.2023"/>
+    <item key="atmospheric_pressure" text="78"/>
+    <item key="sensor_name" text="датчик (Надлишковий тиск)"/>
+    <item key="sensor_model" text="2140 мод.ряд САФІР"/>
+    <item key="sensor_number" text="1"/>
+    <item key="sensor_upper_limit" text="0 / 250 kPa"/>
+    <item key="t_pressure_1" text="ывавы"/>
+    <item key="t_reverse_5" text="fsdfsdfsd fsdf sdf sfsdfdsfsdfd"/>
+    <item key="max_inaccuracy" text="-125,000 % "/>
+    <item key="performed_position" text="пров.інженер з електроніки"/>
+    <item key="performed_name" text="ЖУРАВЕЛЬ Д.Ю."/>
+    <item key="certificate" text="Сертифікат відсутній"/>
+</replacements>

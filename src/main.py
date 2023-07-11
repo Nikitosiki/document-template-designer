@@ -1,7 +1,7 @@
-from src.handler import main
-from src.reader_xml import xml_to_dict
-from src.reader_str import str_to_dict
-from src.docx2pdf import LibreOfficeError
+from handler import main
+from reader_xml import xml_to_dict
+from reader_str import str_to_dict
+from docx2pdf import LibreOfficeError
 
 import argparse
 
@@ -10,7 +10,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Replacing keywords in a .docx file, clearing blank lines in tables, and saving to .docx and/or .pdf. \nIf --save_docx or --save_pdf is not selected then --save_pdf is used, you can select both save modes at the same time.")
     parser.add_argument('input_file', type=str, help="Input .docx file with path")
     parser.add_argument('output_file', type=str, help="Path to the output file named")
-    
+
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument('--replacements_string', type=str, help="Dictionary of replacements as a string")
     group.add_argument('--replacements_file', type=str, help="Path to the XML file with replacements")
@@ -25,10 +25,13 @@ if __name__ == '__main__':
 
     try:
         if args.replacements_string:
-            replacements = string_to_dict(args.replacements_string)
+            replacements = str_to_dict(args.replacements_string)
         elif args.replacements_file:
             replacements = xml_to_dict(args.replacements_file)
+    except Exception:
+        print("Error. Reading replacements.")
 
+    try:
         main(args.input_file, args.output_file, args.clear_table, args.save_docx, args.save_pdf, replacements)
     except LibreOfficeError:
         print("LibreOffice not found or returned an error! Requires installation to save the .pdf file.")

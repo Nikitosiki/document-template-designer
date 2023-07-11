@@ -1,6 +1,6 @@
 from docx import Document
 from tkinter import messagebox
-from src.docx2pdf import*
+from docx2pdf import*
 
 import re
 import os
