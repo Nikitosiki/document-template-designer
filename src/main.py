@@ -1,7 +1,9 @@
 from handler import main
-from reader_xml import xml_to_dict
-from reader_str import str_to_dict
-from docx2pdf import LibreOfficeError
+from parsers.reader_xml import xml_to_dict
+from parsers.reader_str import str_to_dict
+from helpers.docxtopdf import LibreOfficeError
+from helpers.errormes import*
+from helpers.fileos import*
 
 import argparse
 
@@ -15,26 +17,29 @@ if __name__ == '__main__':
     group.add_argument('--replacements_string', type=str, help="Dictionary of replacements as a string")
     group.add_argument('--replacements_file', type=str, help="Path to the XML file with replacements")
 
+    parser.add_argument('--remove_replacements_file', action='store_true', help="Removes the replacement file after use")
     parser.add_argument('--clear_table', action='store_true', help="Add this flag to clear the table")
     parser.add_argument('--save_docx', action='store_true', help="Add this flag to save to the .docx")
     parser.add_argument('--save_pdf', action='store_true', help="Add this flag to save to the .pdf")
 
     args = parser.parse_args()
     if args.replacements_string and args.replacements_file:
-        print("Error. Only one of --replacements_string or --replacements_file should be specified.")
+        show_error("Error. Only one of --replacements_string or --replacements_file should be specified.")
 
     try:
         if args.replacements_string:
             replacements = str_to_dict(args.replacements_string)
         elif args.replacements_file:
             replacements = xml_to_dict(args.replacements_file)
-    except Exception:
-        print("Error. Reading replacements.")
+            delete_file(args.remove_replacements_file, args.replacements_file)
+
+    except Exception as error_mess:
+        show_error(f"Error. Reading replacements. \n\n{error_mess}")
 
     try:
         main(args.input_file, args.output_file, args.clear_table, args.save_docx, args.save_pdf, replacements)
     except LibreOfficeError:
-        print("LibreOffice not found or returned an error! Requires installation to save the .pdf file.")
+        show_error("LibreOffice not found or returned an error! Requires installation to save the .pdf file.")
 
 
 # ______________________________________

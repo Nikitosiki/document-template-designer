@@ -9,5 +9,5 @@ def str_to_dict(dictionary_str):
         key, value = item.split(': ')
         key = key.strip("'")
         value = value.strip("'")
-        dictionary[key] = UseString(value)
+        dictionary[key] = UseString(value, False)
     return dictionary

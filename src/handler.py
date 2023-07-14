@@ -1,11 +1,10 @@
 from docx import Document
-from tkinter import messagebox
-from docx2pdf import*
+from docx.shared import Inches
+from helpers.errormes import*
+from helpers.docxtopdf import*
 
 import re
 import os
-import sys
-
 
 
 # Замена текста в обьекте параграфа
@@ -14,32 +13,51 @@ def replace_text_in_paragraph(element, old_text, new_text):
     for run in element.runs:
         text += run.text
         run.text = ""
-
     element.runs[0].text = text.replace(old_text, new_text)
+
+# Вставка изображения в обьект параграфа
+def replace_image_in_paragraph(element, old_text, new_image_path, new_image_width = 0, new_image_height = 0):
+    for run in element.runs:
+        run.text = ""
+
+    if new_image_width > 0 and new_image_height > 0:
+        element.runs[0].add_picture(new_image_path, width=Inches(new_image_width), height=Inches(new_image_height))
+    elif new_image_width > 0 and new_image_height < 0:
+        element.runs[0].add_picture(new_image_path, width=Inches(new_image_width))
+    elif new_image_width < 0 and new_image_height > 0:
+        element.runs[0].add_picture(new_image_path, height=Inches(new_image_height))
+    else:
+        element.runs[0].add_picture(new_image_path)
 
 
 # Проходить по внутренней структуре параграфа и подбирает значения со словаря
 def find_text_in_paragraph(paragraph, pattern_reg, word_mapping):
     out_matchs = re.finditer(pattern_reg, paragraph.text)  # Пример (.group()): {protocol_number}
     for out_match in out_matchs:
-        reg_string = out_match.group()[1:-1]
+        reg_string = out_match.group()[2:-2]
 
         # replacement = obj if(isinstance(obj := word_mapping.get(reg_string, ''), str)) else obj.value, obj.is_use = True
         
         if reg_string in word_mapping:
             # Если есть такой ключ в словаре
             replacement = word_mapping[reg_string].value
+            is_image = word_mapping[reg_string].is_image
             word_mapping[reg_string].is_use = True
         else:
             replacement = ''
+            is_image = False
 
-        replace_text_in_paragraph(paragraph, out_match.group(), replacement)
+        if is_image:
+            replace_image_in_paragraph(paragraph, out_match.group(), replacement, word_mapping[reg_string].image_width, word_mapping[reg_string].image_height)
+        else:
+            replace_text_in_paragraph(paragraph, out_match.group(), replacement)
 
+        
 
 # Главная ф-ция - заменяет злова в docx
 # (а так же проверят на все возможные ошибки при замене)
 def modify_docx(document, word_mapping):
-    pattern_reg = r"\{[^{}]+\}"
+    pattern_reg = r"\{\{[^{}]+\}\}"
 
     # Замена текста в абзацах
     for paragraph in document.paragraphs:
@@ -56,7 +74,7 @@ def modify_docx(document, word_mapping):
     unused_keys = [key_obj for key_obj, obj in word_mapping.items() if not obj.is_use]
     if unused_keys:
         str_not_used = ", ".join(unused_keys)
-        show_error("These keys were not used: " + str_not_used)
+        show_error("Error. These keys were not used: " + str_not_used)
 
 
 # Удаляет пустые строки в таблицах
@@ -97,12 +115,6 @@ def save_file(doc, output_file, save_docx, save_pdf):
     if (save_pdf and save_docx):
         # Сохраняем в docx и pdf
         convert_to(output_file_docx, output_file_directory)
-
-
-# Отображение ошибки и завершение работы
-def show_error(error_mess):
-    messagebox.showerror("Error", error_mess)
-    sys.exit()
 
 
 # Запуск
