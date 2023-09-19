@@ -34,7 +34,7 @@ def replace_image_in_paragraph(element, old_text, new_image_path, new_image_widt
 def find_text_in_paragraph(paragraph, pattern_reg, word_mapping):
     out_matchs = re.finditer(pattern_reg, paragraph.text)  # Пример (.group()): {protocol_number}
     for out_match in out_matchs:
-        reg_string = out_match.group()[2:-2]
+        reg_string = out_match.group()[2:-2].strip()
 
         # replacement = obj if(isinstance(obj := word_mapping.get(reg_string, ''), str)) else obj.value, obj.is_use = True
         
@@ -56,7 +56,7 @@ def find_text_in_paragraph(paragraph, pattern_reg, word_mapping):
 
 # Главная ф-ция - заменяет злова в docx
 # (а так же проверят на все возможные ошибки при замене)
-def modify_docx(document, word_mapping):
+def modify_docx(document, word_mapping, use_check_replacs):
     pattern_reg = r"\{\{[^{}]+\}\}"
 
     # Замена текста в абзацах
@@ -71,10 +71,11 @@ def modify_docx(document, word_mapping):
                     find_text_in_paragraph(paragraph, pattern_reg, word_mapping)
 
     # Проверяем все ли ключи из словаря были использованы
-    unused_keys = [key_obj for key_obj, obj in word_mapping.items() if not obj.is_use]
-    if unused_keys:
-        str_not_used = ", ".join(unused_keys)
-        show_error("Error. These keys were not used: " + str_not_used)
+    if use_check_replacs:
+        unused_keys = [key_obj for key_obj, obj in word_mapping.items() if not obj.is_use]
+        if unused_keys:
+            str_not_used = ", ".join(unused_keys)
+            show_error("Error. These keys were not used: " + str_not_used)
 
 
 # Удаляет пустые строки в таблицах
@@ -118,10 +119,10 @@ def save_file(doc, output_file, save_docx, save_pdf):
 
 
 # Запуск
-def main(input_file_docx, output_file, clear_table, save_docx, save_pdf, replacements):
+def main(input_file_docx, output_file, clear_table, use_check_replacs, save_docx, save_pdf, replacements):
     doc = Document(input_file_docx)
 
-    modify_docx(doc, replacements)
+    modify_docx(doc, replacements, use_check_replacs)
     if (clear_table): remove_empty_table_rows(doc)
 
     if (not save_pdf and not save_docx):
@@ -129,3 +130,4 @@ def main(input_file_docx, output_file, clear_table, save_docx, save_pdf, replace
         save_pdf = True
 
     save_file(doc, output_file, save_docx, save_pdf)
+    

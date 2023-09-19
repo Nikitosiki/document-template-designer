@@ -18,6 +18,7 @@ if __name__ == '__main__':
     group.add_argument('--replacements_file', type=str, help="Path to the XML file with replacements")
 
     parser.add_argument('--remove_replacements_file', action='store_true', help="Removes the replacement file after use")
+    parser.add_argument('--all_replacements_used_check', action='store_true', help="When used, displays an error if at least one word from the replacements is not used")
     parser.add_argument('--clear_table', action='store_true', help="Add this flag to clear the table")
     parser.add_argument('--save_docx', action='store_true', help="Add this flag to save to the .docx")
     parser.add_argument('--save_pdf', action='store_true', help="Add this flag to save to the .pdf")
@@ -37,7 +38,8 @@ if __name__ == '__main__':
         show_error(f"Error. Reading replacements. \n\n{error_mess}")
 
     try:
-        main(args.input_file, args.output_file, args.clear_table, args.save_docx, args.save_pdf, replacements)
+        main(args.input_file, args.output_file, args.clear_table, args.all_replacements_used_check, args.save_docx, args.save_pdf, replacements)
+        print("Done!")
     except LibreOfficeError:
         show_error("LibreOffice not found or returned an error! Requires installation to save the .pdf file.")
 
