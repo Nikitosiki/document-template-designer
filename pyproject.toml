@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "document-template-designer"
+version = "0.1.0"
+description = "A tool for replacing keywords in .docx files, clearing blank lines in tables, and converting to .pdf"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "MIT"}
+authors = [
+    {name = "Nikitosiki"}
+]
+
+dependencies = [
+    "python-docx>=0.8.11",
+]
+
+[project.optional-dependencies]
+dev = []
+
+[tool.setuptools]
+packages = ["src"]
+
+[project.scripts]
+document-template-designer = "src.main:main"
